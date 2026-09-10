@@ -27,8 +27,8 @@ public class CloudflareApiController : CloudflareApiControllerBase
         return asset.Status?.ToLowerInvariant() switch
         {
             "created" or "pre-queued" or "upload-pending" or "uploaded" or "queued" or
-            "downloading" or "downloaded" or "processing" or "processed" or
-            "stream-ready" or "repackaging" => AssetStatus.Preparing,
+            "pending" or "downloading" or "downloaded" or "processing" or "inprogress" or
+            "in_progress" or "processed" or "stream-ready" or "repackaging" => AssetStatus.Preparing,
             "errored" or "error" => AssetStatus.Errored,
             "ready" => AssetStatus.Ready,
             _ => AssetStatus.Unknown,

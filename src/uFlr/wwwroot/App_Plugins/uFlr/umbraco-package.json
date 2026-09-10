@@ -1,0 +1,14 @@
+{
+  "id": "uFlr",
+  "name": "uFlr",
+  "version": "0.0.0",
+  "allowPackageTelemetry": true,
+  "extensions": [
+    {
+      "name": "uFlr Bundle",
+      "alias": "uFlr.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/uFlr/u-gum.js"
+    }
+  ]
+}

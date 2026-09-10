@@ -11,16 +11,38 @@ public interface ICloudflareService
 
 public sealed class CloudflareAsset
 {
-    [JsonPropertyName("asset_id")]
-    public string? AssetId { get; set; }
-    public string? Status { get; set; }
-    public CloudflareOutput? Output { get; set; }
-    [JsonPropertyName("upload_url")]
-    public string? UploadUrl { get; set; }
+    public string? AssetId { get; init; }
+    public string? Status { get; init; }
+    public CloudflareOutput? Output { get; init; }
 }
 
 public sealed class CloudflareOutput
 {
-    [JsonPropertyName("status_url")] public string? StatusUrl { get; set; }
-    [JsonPropertyName("playback_url")] public string? PlaybackUrl { get; set; }
+    public string? StatusUrl { get; init; }
+    public string? PlaybackUrl { get; init; }
+}
+
+internal sealed class CloudflareResponse<T>
+{
+    [JsonPropertyName("success")] public bool Success { get; init; }
+    [JsonPropertyName("result")] public T? Result { get; init; }
+}
+
+internal sealed class CloudflareVideo
+{
+    [JsonPropertyName("uid")] public string? Uid { get; init; }
+    [JsonPropertyName("readyToStream")] public bool ReadyToStream { get; init; }
+    [JsonPropertyName("status")] public CloudflareVideoStatus? Status { get; init; }
+    [JsonPropertyName("playback")] public CloudflarePlayback? Playback { get; init; }
+}
+
+internal sealed class CloudflareVideoStatus
+{
+    [JsonPropertyName("state")] public string? State { get; init; }
+    [JsonPropertyName("errorReasonText")] public string? ErrorReasonText { get; init; }
+}
+
+internal sealed class CloudflarePlayback
+{
+    [JsonPropertyName("hls")] public string? Hls { get; init; }
 }

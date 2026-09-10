@@ -5,7 +5,7 @@
     "ImageUrl": "https://github.com/skttl.png"
   },
   "Category": "PIM & DAM",
-  "Description": "Automatically sync local video assets from Umbraco to Cloudflare",
+  "Description": "Automatically sync local video assets from Umbraco to Cloudflare Stream",
   "LicenseTypes": [
     "Free"
   ],

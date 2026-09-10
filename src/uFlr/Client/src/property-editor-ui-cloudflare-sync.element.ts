@@ -2,10 +2,10 @@ import { html, customElement, property, state } from '@umbraco-cms/backoffice/ex
 import type { UmbPropertyEditorUiElement } from '@umbraco-cms/backoffice/property-editor';
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
 import { CloudflareValue } from './types/cloudflarevalue';
-import { AssetStatus, Ugum } from './api';
+import { AssetStatus, Uflr } from './api';
 
 @customElement('uflr-property-editor-ui-cloudflare-sync')
-export class UGumPropertyEditorUICloudflareSyncElement extends UmbLitElement implements UmbPropertyEditorUiElement {
+export class UflrPropertyEditorUICloudflareSyncElement extends UmbLitElement implements UmbPropertyEditorUiElement {
   @property() public set value(newValue: CloudflareValue | undefined | null) { this._value = newValue; this.#fetchStatus(); }
   public get value(): CloudflareValue | undefined | null { return this._value; }
   @state() private _value: CloudflareValue | undefined | null = null;
@@ -15,7 +15,7 @@ export class UGumPropertyEditorUICloudflareSyncElement extends UmbLitElement imp
   #fetchStatus = async () => {
     if (!this.value?.CloudflareAssetId) { this._status = null; return; }
     this._statusLoading = true;
-    const { data } = await Ugum.getStatus({ query: { assetId: this.value.CloudflareAssetId } });
+    const { data } = await Uflr.getStatus({ query: { assetId: this.value.CloudflareAssetId } });
     this._statusLoading = false;
     this._status = data as unknown as AssetStatus;
     if (this._status === AssetStatus.UNKNOWN || this._status === AssetStatus.PREPARING) setTimeout(() => this.#fetchStatus(), 5000);
@@ -50,5 +50,5 @@ export class UGumPropertyEditorUICloudflareSyncElement extends UmbLitElement imp
   }
 }
 
-export default UGumPropertyEditorUICloudflareSyncElement;
-declare global { interface HTMLElementTagNameMap { 'uflr-property-editor-ui-cloudflare-sync': UGumPropertyEditorUICloudflareSyncElement; } }
+export default UflrPropertyEditorUICloudflareSyncElement;
+declare global { interface HTMLElementTagNameMap { 'uflr-property-editor-ui-cloudflare-sync': UflrPropertyEditorUICloudflareSyncElement; } }

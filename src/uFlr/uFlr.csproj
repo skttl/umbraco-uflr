@@ -11,7 +11,7 @@
     <Product>Umbraco.Community.uFlr</Product>
     <PackageId>Umbraco.Community.uFlr</PackageId>
     <Title>uFlr</Title>
-    <Description>Automatically sync local video assets from Umbraco to Cloudflare.</Description>
+    <Description>Automatically sync local video assets from Umbraco to Cloudflare Stream.</Description>
     <PackageTags>umbraco;umbraco-marketplace</PackageTags>
     <PackageIcon>uflr.png</PackageIcon>
     <Authors>Søren Kottal</Authors>
