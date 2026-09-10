@@ -1,0 +1,10 @@
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Test>
+@{
+    Layout = null;
+}
+
+@if (Model.Media?.Content is UmbracoMediaVideo mediaVideo && mediaVideo.CloudflareVideo is not null)
+{
+    <video controls src="@mediaVideo.CloudflareVideo.PlaybackUrl" style="max-width: 640px;"></video>
+}

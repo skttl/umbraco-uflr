@@ -1,0 +1,88 @@
+name: Release Package
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]'
+      - '[0-9]+.[0-9]+.[0-9]-*'
+
+jobs:
+  release:
+    runs-on: windows-latest
+    environment: release
+    permissions:
+      contents: write
+      id-token: write
+
+    env:
+      RELEASE_VERSION: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate release version
+        shell: pwsh
+        run: |
+          if ($env:RELEASE_VERSION -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$') {
+            throw "Tag '$env:RELEASE_VERSION' is not a valid NuGet SemVer 2 version."
+          }
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Update Umbraco package version
+        shell: pwsh
+        run: |
+          $packageJsonPath = 'src/uGum/Client/public/umbraco-package.json'
+          $packageJson = Get-Content -Raw $packageJsonPath | ConvertFrom-Json
+          $packageJson.version = $env:RELEASE_VERSION
+
+          foreach ($extension in $packageJson.extensions) {
+            if ($extension.js -match '\?v=') {
+              $extension.js = $extension.js -replace '\?v=[^"&]*', "?v=$env:RELEASE_VERSION"
+            } else {
+              $extension.js = "$($extension.js)?v=$env:RELEASE_VERSION"
+            }
+          }
+
+          $packageJson | ConvertTo-Json -Depth 10 | Set-Content -Encoding utf8 $packageJsonPath
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm dependencies
+        run: npm ci
+        working-directory: src/uGum/Client
+
+      - name: Build npm package
+        run: npm run build
+        working-directory: src/uGum/Client
+
+      - name: Build and pack NuGet package
+        run: dotnet pack src/uGum/uGum.csproj --configuration Release --output artifacts /p:PackageVersion=$env:RELEASE_VERSION
+
+      - name: NuGet login (OIDC)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push package to NuGet
+        shell: pwsh
+        run: |
+          Get-ChildItem artifacts -Filter '*.nupkg' | ForEach-Object {
+            dotnet nuget push $_.FullName --api-key '${{ steps.nuget-login.outputs.NUGET_API_KEY }}' --source https://api.nuget.org/v3/index.json --skip-duplicate
+          }
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: uGum ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: artifacts/*.nupkg
